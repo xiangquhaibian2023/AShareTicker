@@ -122,7 +122,10 @@ public:
             try {
                 return fetchEastmoneyKLines(symbol, klt, limit);
             } catch (const std::exception&) {
-                throw std::runtime_error("分钟行情服务暂时不可用，程序将继续自动重试。");
+            }
+            try {
+                return fetchEastmoneyKLines(symbol, klt, limit);
+            } catch (const std::exception&) {
             }
         }
 
@@ -249,7 +252,7 @@ private:
 
     static std::vector<Quote> parseTencentQuotes(const std::string& body) {
         std::vector<Quote> quotes;
-        static const std::regex lineRegex(R"REGEX(v_([a-z]{2}\d{6})="([^"]*)")REGEX");
+        static const std::regex lineRegex(R"REGEX(v_([a-z]{2}\d{6})="([^\"]*)")REGEX");
         for (auto it = std::sregex_iterator(body.begin(), body.end(), lineRegex); it != std::sregex_iterator(); ++it) {
             auto fields = split((*it)[2].str(), '~');
             if (fields.size() < 6) {
@@ -318,7 +321,7 @@ private:
 
         std::string body = client_.get(url.str());
         std::vector<KLine> lines;
-        static const std::regex klineRegex(R"REGEX("(\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2})?,[^"]+)")REGEX");
+        static const std::regex klineRegex(R"REGEX("(\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2})?,[^\"]+)")REGEX");
         for (auto it = std::sregex_iterator(body.begin(), body.end(), klineRegex); it != std::sregex_iterator(); ++it) {
             auto fields = split((*it)[1].str(), ',');
             if (fields.size() < 6) {
@@ -417,7 +420,7 @@ private:
 
         std::vector<KLine> lines;
         static const std::regex minuteRegex(
-            R"REGEX(\{\"day\":\"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}):\d{2}\",\"open\":\"([^"]+)\",\"high\":\"([^"]+)\",\"low\":\"([^"]+)\",\"close\":\"([^"]+)\",\"volume\":\"([^"]+)\")REGEX");
+            R"REGEX(\{\"day\":\"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}):\d{2}\",\"open\":\"([^\"]+)\",\"high\":\"([^\"]+)\",\"low\":\"([^\"]+)\",\"close\":\"([^\"]+)\",\"volume\":\"([^\"]+)\")REGEX");
         for (auto it = std::sregex_iterator(body.begin(), body.end(), minuteRegex);
              it != std::sregex_iterator(); ++it) {
             if ((*it)[1].str().compare(0, 10, date) != 0) {
@@ -445,7 +448,7 @@ private:
         std::string body = client_.get(url);
 
         std::smatch dateMatch;
-        static const std::regex dateRegex(R"REGEX("date\":?"?(\d{4})(\d{2})(\d{2})"?")REGEX");
+        static const std::regex dateRegex(R"REGEX("date\":\"?(\d{4})(\d{2})(\d{2})\"?")REGEX");
         if (!std::regex_search(body, dateMatch, dateRegex)) {
             throw std::runtime_error("Tencent minute response has no date.");
         }
@@ -489,7 +492,7 @@ private:
         std::vector<KLine> lines;
         // 新浪直接提供每分钟 OHLCV，解析后可直接映射到统一 KLine 结构。
         static const std::regex minuteRegex(
-            R"REGEX(\{\"day\":\"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}):\d{2}\",\"open\":\"([^"]+)\",\"high\":\"([^"]+)\",\"low\":\"([^"]+)\",\"close\":\"([^"]+)\",\"volume\":\"([^"]+)\")REGEX");
+            R"REGEX(\{\"day\":\"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}):\d{2}\",\"open\":\"([^\"]+)\",\"high\":\"([^\"]+)\",\"low\":\"([^\"]+)\",\"close\":\"([^\"]+)\",\"volume\":\"([^\"]+)\")REGEX");
         for (auto it = std::sregex_iterator(body.begin(), body.end(), minuteRegex); it != std::sregex_iterator(); ++it) {
             KLine line;
             line.date = (*it)[1].str();
@@ -516,7 +519,7 @@ private:
         std::string body = client_.get(url.str());
 
         std::vector<KLine> lines;
-        static const std::regex dailyRegex(R"REGEX(\["(\d{4}-\d{2}-\d{2})","([^"]+)","([^"]+)","([^"]+)","([^"]+)","([^"]+)")REGEX");
+        static const std::regex dailyRegex(R"REGEX(\[\"(\d{4}-\d{2}-\d{2})\",\"([^\"]+)\",\"([^\"]+)\",\"([^\"]+)\",\"([^\"]+)\",\"([^\"]+)\")REGEX");
         for (auto it = std::sregex_iterator(body.begin(), body.end(), dailyRegex); it != std::sregex_iterator(); ++it) {
             KLine line;
             line.date = (*it)[1].str();
