@@ -249,7 +249,7 @@ private:
 
     static std::vector<Quote> parseTencentQuotes(const std::string& body) {
         std::vector<Quote> quotes;
-        static const std::regex lineRegex(R"REGEX(v_([a-z]{2}\d{6})=\"([^\"]*)\")REGEX");
+        static const std::regex lineRegex(R"REGEX(v_([a-z]{2}\d{6})="([^"]*)")REGEX");
         for (auto it = std::sregex_iterator(body.begin(), body.end(), lineRegex); it != std::sregex_iterator(); ++it) {
             auto fields = split((*it)[2].str(), '~');
             if (fields.size() < 6) {
@@ -417,7 +417,7 @@ private:
 
         std::vector<KLine> lines;
         static const std::regex minuteRegex(
-            R"REGEX(\{\"day\":\"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}):\d{2}\",\"open\":\"([^\"]+)\",\"high\":\"([^\"]+)\",\"low\":\"([^\"]+)\",\"close\":\"([^\"]+)\",\"volume\":\"([^\"]+)\")REGEX");
+            R"REGEX(\{\"day\":\"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}):\d{2}\",\"open\":\"([^"]+)\",\"high\":\"([^"]+)\",\"low\":\"([^"]+)\",\"close\":\"([^"]+)\",\"volume\":\"([^"]+)\")REGEX");
         for (auto it = std::sregex_iterator(body.begin(), body.end(), minuteRegex);
              it != std::sregex_iterator(); ++it) {
             if ((*it)[1].str().compare(0, 10, date) != 0) {
@@ -489,7 +489,7 @@ private:
         std::vector<KLine> lines;
         // 新浪直接提供每分钟 OHLCV，解析后可直接映射到统一 KLine 结构。
         static const std::regex minuteRegex(
-            R"REGEX(\{\"day\":\"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}):\d{2}\",\"open\":\"([^\"]+)\",\"high\":\"([^\"]+)\",\"low\":\"([^\"]+)\",\"close\":\"([^\"]+)\",\"volume\":\"([^\"]+)\")REGEX");
+            R"REGEX(\{\"day\":\"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}):\d{2}\",\"open\":\"([^"]+)\",\"high\":\"([^"]+)\",\"low\":\"([^"]+)\",\"close\":\"([^"]+)\",\"volume\":\"([^"]+)\")REGEX");
         for (auto it = std::sregex_iterator(body.begin(), body.end(), minuteRegex); it != std::sregex_iterator(); ++it) {
             KLine line;
             line.date = (*it)[1].str();
