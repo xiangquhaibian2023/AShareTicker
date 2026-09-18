@@ -1,0 +1,22 @@
+# 构建产物
+build/
+dist/
+*.exe
+*.zip
+*.sha256
+
+# 个人交易数据（包含账户资金、券商对账单、持仓等敏感信息，不纳入版本库）
+account_funds.tsv
+broker_statement.csv
+holdings.tsv
+holding_trades.tsv
+favorites.txt
+strategies.tsv
+strategy_signals.tsv
+strategy_symbols.txt
+strategy_trades.tsv
+active_strategy.txt
+
+# 运行日志与历史行情缓存
+logs/
+replay_cache/
