@@ -11,3 +11,4 @@ LRESULT CALLBACK TradeAnalysisViewProc(HWND window, UINT message,
                                        WPARAM wParam, LPARAM lParam);
 
 }  // namespace ashare
+

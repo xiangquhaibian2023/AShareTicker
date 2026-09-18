@@ -52,3 +52,4 @@ PositionAdvice evaluatePositionAdvice(const Holding& holding,
                                       double correlatedExposurePercent = 0.0);
 
 }  // namespace ashare
+
