@@ -122,10 +122,7 @@ public:
             try {
                 return fetchEastmoneyKLines(symbol, klt, limit);
             } catch (const std::exception&) {
-            }
-            try {
-                return fetchEastmoneyKLines(symbol, klt, limit);
-            } catch (const std::exception&) {
+                throw std::runtime_error("分钟行情服务暂时不可用，程序将继续自动重试。");
             }
         }
 
@@ -448,7 +445,7 @@ private:
         std::string body = client_.get(url);
 
         std::smatch dateMatch;
-        static const std::regex dateRegex(R"REGEX("date":"?(\d{4})(\d{2})(\d{2})"?")REGEX");
+        static const std::regex dateRegex(R"REGEX("date":"?(\d{4})(\d{2})(\d{2})"?)REGEX");
         if (!std::regex_search(body, dateMatch, dateRegex)) {
             throw std::runtime_error("Tencent minute response has no date.");
         }
